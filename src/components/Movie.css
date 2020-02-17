@@ -1,17 +1,39 @@
-.movies .movie {
+a:link {
+  text-decoration: none;
+}
+a:visited {
+  text-decoration: none;
+}
+a:hover {
+  text-decoration: none;
+}
+a {
   width: 45%;
+}
+
+.movies .movie {
+  width: 100%;
   background-color: white;
   margin-bottom: 70px;
   display: flex;
   align-items: flex-start;
   justify-content: space-between;
   font-weight: 300;
-  padding: 20px;
-  border-radius: 5px;
+  padding: 10px;
+  border-radius: 15px;
   color: #adaeb9;
   box-shadow: 0 13px 27px -5px rgba(50, 50, 93, 0.25),
     0 8px 16px -8px rgba(0, 0, 0, 0.3), 0 -6px 16px -6px rgba(0, 0, 0, 0.025);
 }
+
+/* .movies .movie a {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  text-decoration: none;
+  color: inherit;
+  display: inline;
+} */
 
 .movie img {
   position: relative;

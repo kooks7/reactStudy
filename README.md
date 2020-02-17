@@ -807,4 +807,21 @@
    
    ```
 
-   
+
+
+### 카드 클릭했을 때 영화 정보 띄우기
+
+> 모든 라우터에 안에 있는 라우터들을 props 를 가진다
+
+```javascript
+const App = () => {
+  return (
+    <HashRouter>
+      <Navigation />
+      <Route path="/" exact={true} component={Home} /> // react-router-dom 이 라우터 보내줌
+      <Route path="/about" component={About} /> // react-router-dom 이 라우터 보내줌
+    </HashRouter>
+  );
+};
+```
+
