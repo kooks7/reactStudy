@@ -179,5 +179,201 @@
      };
      ```
 
-     
+## 2. Class 컴포넌트
+
+* React 는 자동적으로 나의 calss component의 render method를 실행한다.
+
+* Class Component 는 state 를 가진다.
+
+* state는 object이고 component의 data를 넣을 공간이 있다.
+
+* 즉 내가 바꿀 data는 state 안에 넣으면 된다.
+
+* ```javascript
+  import React from 'react';
+  import PropTypes from 'prop-types';
+  
+  class App extends React.Component {
+    state = {
+      count: 0
+    };
+  ///////////////////////////////////////////////////
+    add = () => {
+      this.state.count++;
+      console.log('add');
+    };
+    minus = () => {
+      this.state.count--;
+      console.log('minus');
+    };
+  ///////////////////////////////////////////////////
+    render() {
+      return (
+        <div>
+          <h1>The number is : {this.state.count}</h1>
+          <button onClick={this.add}>Add</button>
+          <button onClick={this.minus}>Minus</button>
+        </div>
+      );
+    }
+  }
+  
+  export default App;
+  
+  ```
+
+* 위에서 처럼 직접적으로 state 값을 바꿀수 없다. 따라서 새로운 상태로 변경 될 때마다 render 함수를 새로 실행할 수 있게 setState를 사용해야 한다.
+
+  ```javascript
+    add = () => {
+      this.setState({ count: this.state.count + 1 });
+      console.log('add');
+    };
+    minus = () => {
+      this.setState({ count: this.state.count - 1 });
+      console.log('minus');
+    };
+  ```
+
+  성능 상 더 좋은 코드
+
+  ```javascript
+    add = () => {
+      this.setState(current => ({ count: current.count + 1 })); // state를 호출하지 않았다.
+      console.log('add');
+    };
+    minus = () => {
+      this.setState(current => ({ count: current.count - 1 }));
+      console.log('minus');
+    };
+  ```
+
+## 3. Movie App 만들기  
+
+
+
+#### 가장 많이 사용하는 component (Component Life Cycle)
+
+1. Mounting
+
+   맨 처음 실행
+
+   * `constructor()`
+   * `render()`
+   * `componentDIdMount()`
+
+2. Updating
+   사용자에 의해 실행
+
+   * `render()`
+   * `componentDIdUpdate()`
+
+3. Unmounting
+
+   컴포넌트가 끝날 때
+
+   * `componentWillUmount()`
+
+### Movie App Api 가져오기
+
+1. ` $ npm i axios`
+
+2. aixos.get() 으로 Api 가져오기
+
+   ```javascript
+     componentDidMount() {
+       axios.get('https://yts-proxy.now.sh/list_movies.json');
+     }
+   ```
+
+3. axios 는 데이터 가져오는데 시간이 걸리므로 asyn await 사용하기
+
+   ```javascript
+     getMovies = async () => {
+       const movies = await axios.get('https://yts-proxy.now.sh/list_movies.json');
+     };
+     componentDidMount() {
+       this.getMovies();
+     }
+   ```
+
+4. src/Movie.js 에 PropTyle 정의 하기
+
+   ```javascript
+   import React from 'react';
+   import PropTypes from 'prop-types';
+   
+   const Movie = ({ id, year, title, summary, poster }) => {
+     return <h4>{title}</h4>;
+   };
+   
+   Movie.propType = {
+     id: PropTypes.number.isRequired,
+     title: PropTypes.string.isRequired,
+     summary: PropTypes.string.isRequired,
+     poster: PropTypes.string.isRequired,
+     year: PropTypes.number.isRequired
+   };
+   
+   export default Movie;
+   
+   ```
+
+5. App.js 에 import 하기
+
+   ```javascript
+   import React from 'react';
+   import axios from 'axios';
+   import Movie from './Movie';
+   
+   class App extends React.Component {
+     state = {
+       isLoading: true,
+       movies: []
+     };
+   
+     // 영화 API 가져오기
+     getMovies = async () => {
+       const {
+         data: {
+           data: { movies }
+         }
+       } = await axios.get(
+         'https://yts-proxy.now.sh/list_movies.json?sort_by=rating'
+       );
+       this.setState({ movies, isLoading: false });
+     };
+   
+     componentDidMount() {
+       this.getMovies();
+     }
+   
+     render() {
+       const { isLoading, movies } = this.state;
+       return (
+         <div>
+           {isLoading
+             ? 'Loading...'
+             : movies.map(movie => {
+                 return (
+                   <Movie
+                     key={movie.id}
+                     id={movie.id}
+                     year={movie.year}
+                     title={movie.title}
+                     summary={movie.summary}
+                     poster={movie.medium_cover_image}
+                   />
+                 );
+               })}
+         </div>
+       );
+     }
+   }
+   
+   export default App;
+   
+   ```
+
+   
 
