@@ -472,4 +472,339 @@
    
    ```
 
+
+
+### 프로퍼티에 배열 추가하기
+
+1. Movies에 genre 추가
+
+   ```javascript
+   const Movie = ({ id, year, title, summary, poster, genres }) => {
+     return (
+       <div class="movie">
+         <img src={poster} alt={title} title={title}></img>
+         <div className="move_data">
+           <h3 className="movie_title">{title}</h3>
+           <h5 className="movie_year">{year}</h5>
+           <ul>
+             {genres.map((genre, index) => (
+               <li key={index} className="genres_genre">
+                 {genre}
+               </li>
+             ))}
+           </ul>
+           <p className="movie_summary">{summary}</p>
+         </div>
+       </div>
+     );
+   };
+   
+   Movie.propType = {
+     id: PropTypes.number.isRequired,
+     title: PropTypes.string.isRequired,
+     summary: PropTypes.string.isRequired,
+     poster: PropTypes.string.isRequired,
+     year: PropTypes.number.isRequired,
+     genres: PropTypes.arrayOf(PropTypes.string).isRequired
+   };
+   ```
+
+2. App.js 에 장르 추가
+
+   ```javascript
+         import React from 'react';
+   import axios from 'axios';
+   import Movie from './Movie';
+   import './App.css';
+   
+   class App extends React.Component {
+     state = {
+       isLoading: true,
+       movies: []
+     };
+   
+     // 영화 API 가져오기
+     getMovies = async () => {
+       const {
+         data: {
+           data: { movies }
+         }
+       } = await axios.get(
+         'https://yts-proxy.now.sh/list_movies.json?sort_by=rating'
+       );
+       this.setState({ movies, isLoading: false });
+     };
+   
+     componentDidMount() {
+       this.getMovies();
+     }
+   
+     render() {
+       const { isLoading, movies } = this.state;
+       return (
+         <section className="container">
+           {isLoading ? (
+             <div className="loader">
+               <span className="loader_text">Loading...</span>
+             </div>
+           ) : (
+             <div className="movies">
+               {movies.map(movie => (
+                 <Movie
+                   key={movie.id}
+                   genres={movie.genres}
+                   id={movie.id}
+                   year={movie.year}
+                   title={movie.title}
+                   summary={movie.summary}
+                   poster={movie.medium_cover_image}
+                 />
+               ))}
+             </div>
+           )}
+         </section>
+       );
+     }
+   }
+   
+   export default App;
+   
+   ```
+
+   
+
+### Style 추가
+
+1. App.css
+
+   ```css
+   * {
+     box-sizing: border-box;
+   }
+   
+   body {
+     margin: 0;
+     padding: 0;
+     background-color: #eff3f7;
+     height: 100%;
+   }
+   
+   html,
+   body,
+   #potato,
+   .container {
+     height: 100%;
+     display: flex;
+     justify-content: center;
+   }
+   
+   .loader {
+     width: 100%;
+     height: 100%;
+     display: flex;
+     justify-content: center;
+     align-items: center;
+     font-weight: 300;
+   }
+   
+   .movies {
+     display: flex;
+     justify-content: space-between;
+     align-items: flex-start;
+     flex-wrap: wrap;
+     padding: 50px;
+     padding-top: 70px;
+     width: 80%;
+   }
+   
+   ```
+
+2. Movie.css
+
+   ```javascript
+   .movies .movie {
+     width: 45%;
+     background-color: white;
+     margin-bottom: 70px;
+     display: flex;
+     align-items: flex-start;
+     justify-content: space-between;
+     font-weight: 300;
+     padding: 20px;
+     border-radius: 5px;
+     color: #adaeb9;
+     box-shadow: 0 13px 27px -5px rgba(50, 50, 93, 0.25),
+       0 8px 16px -8px rgba(0, 0, 0, 0.3), 0 -6px 16px -6px rgba(0, 0, 0, 0.025);
+   }
+   
+   .movie img {
+     position: relative;
+     top: -50px;
+     max-width: 150px;
+     width: 100%;
+     margin-right: 30px;
+     box-shadow: 0 30px 60px -12px rgba(50, 50, 93, 0.25),
+       0 18px 36px -18px rgba(0, 0, 0, 0.3), 0 -12px 36px -8px rgba(0, 0, 0, 0.025);
+   }
+   
+   .movie .movie__title,
+   .movie .movie__year {
+     margin: 0;
+     font-weight: 300;
+   }
+   
+   .movie .movie__title {
+     margin-bottom: 5px;
+     font-size: 24px;
+     color: #2c2c2c;
+   }
+   
+   .movie .movie__genres {
+     list-style: none;
+     padding: 0;
+     margin: 0;
+     display: flex;
+     margin: 5px 0px;
+   }
+   
+   .movie__genres li,
+   .movie .movie__year {
+     margin-right: 10px;
+     font-size: 14px;
+   }
+   
+   ```
+
+3. summary 자르기
+
+   * slice 메소드를 이용해서 배열 잘라주기.
+
+   * Movie.js
+
+     ```javascript
+     const Movie = ({ id, year, title, summary, poster, genres }) => {
+       return (
+         <div class="movie">
+           <img src={poster} alt={title} title={title}></img>
+           <div className="movie__data">
+             <h3 className="movie__title">{title}</h3>
+             <h5 className="movie__year">{year}</h5>
+             <ul className="movie__genres">
+               {genres.map((genre, index) => (
+                 <li key={index} className="genres__genre">
+                   {genre}
+                 </li>
+               ))}
+             </ul>
+             <p className="movie__summary">{summary.slice(0, 140)} ...</p>
+           </div>
+         </div>
+       );
+     };
+     ```
+
+     
+
+## 4. Conclusion
+
+### gh page 설치
+
+1. ` $ npm i gh-pages`
+
+2. `pakage.json` 에 homepage 넣기
+
+   ```json
+   "homepage": "https://kooks7.github.io/reactStudy
+   ```
+
+3. `$ npm run build`
+
+4. `pakage.json` deploy, predeploy 추가 하기
+
+   ```json
+     "scripts": {
+       "start": "react-scripts start",
+       "build": "react-scripts build",
+       "deploy": "gh-pages -d build",
+       "predeploy": "npm run build"
+     },
+   ```
+
+5. ` $ npm run deploy` 배포 하기
+
+## 5. Routing
+
+동적인 페이지를 만들기 위해 네비게이션을 만든다.
+
+1. src/에 components 폴더와 routes 폴더 생성
+
+2. 기존 App.js를 routes/Home.js 로 옮김
+
+3. App.js 에 Url에 따라 page 렌더 해주기
+
+   * 잘못된 예
+
+     ```javascript
+     import React from 'react';
+     import { HashRouter, Route } from 'react-router-dom';
+     import About from './routes/About';
+     import Home from './routes/Home';
+     
+     const App = () => {
+       return (
+         <HashRouter>
+           <Route path="/about" component={About} />
+           <Route path="/Home" component={Home} />
+         </HashRouter>
+       );
+     };
+     
+     export default App;
+     
+     ```
+
+     이렇게 작성하면 동시에 두개가 render 된다.
+
+   * 올바른 App.js
+
+     ```javascript
+     import React from 'react';
+     import { HashRouter, Route } from 'react-router-dom';
+     import About from './routes/About';
+     import Home from './routes/Home';
+     
+     const App = () => {
+       return (
+           //<HashRouter> 대신 <BrowserRouter> 를 사용하게 되면 URL에 # 가 붙지 않지만 github에 올리기 	   // 불편
+         <HashRouter>
+           <Route path="/" exact={true} component={Home} />
+           <Route path="/about" component={About} />
+         </HashRouter>
+       );
+     };
+     
+     export default App;
+     
+     ```
+
+4. components/Navigation.js 추가
+
+   ```javascript
+   import React from 'react';
+   import { Link } from 'react-router-dom';
+   
+   export const Navigation = () => {
+       // <a href="/">Home</Link> 를 사용하게 되면 페이지가 리로딩 된다. 매우 느림
+     return (
+       <div>
+         <Link to="/">Home</Link>
+         <Link to="/about">About</Link>
+       </div>
+     );
+   };
+   
+   export default Navigation;
+   
+   ```
+
    
