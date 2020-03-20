@@ -31,9 +31,16 @@
    * 하지만 우리는 public/index.html 에 글을 쓰지 않았다.
    * index.js의 ReactDOM.render을 통해 root에 App.js에 정의된 코드를 index.html에 넣어준다.
    * App.js 를 컴포넌트라고 한다. 항상 컴포넌트를 꾸민다. 
-   * 컴포넌트는 HTML을 return 한다.
+   * **컴포넌트는 HTML을 `return` 하는 함수다!!**
+* 리액트는 하나의 컴포넌트만 `return` 한다.
 
-3. 새로운 컴포넌트 만들기
+---
+
+## 1. 컴포넌트
+
+#### 컴포넌트 기본 사용법
+
+1. 새로운 컴포넌트 만들기
 
    src/Potato.js
 
@@ -48,7 +55,7 @@
    
    ```
 
-4. App.js 에 Potato 넣기
+2. App.js 에 Potato 넣기
    App.js
 
    ```javascript
@@ -68,96 +75,207 @@
    
    ```
 
-5. 컴포넌트 만들어서 동적으로 생성하기
+   리액트는 하나의 컴포넌트만 `return` 함으로 여러개의 컴포넌트를 합치자.
+
+#### 동적 컴포넌트 생성
+
+1. 컴포넌트에 `value` 주고 동적으로 생성하기
    App.js
 
    ```javascript
    import React from 'react';
    
-   const Potato = ({ fav }) => {
-     return <h1>I like {fav}</h1>;
+   const Food = props => {
+     console.log(props);
+     return <h1>I like potato</h1>;
    };
    
-   function App() {
-     return (
-       <div>
-         <h1>Hello!!!</h1>
-         <Potato fav="kimchi" />
-         <Potato fav="스파게티" />
-         <Potato fav="치즈" />
-         <Potato fav="스테이크" />
-       </div>
-     );
-   }
-   
-   export default App;
-   
-   ```
-
-   * 컴퍼넌트에 인자를 줄 수 있다. 그 인자를 사용해서 HTML로 보내줄 코드를 작성할 수 있습니다.
-
-6. API 에서 음식 정보 가져왔다고 가정하고 App.js 작성하기
-
-   ```javascript
-   import React from 'react';
-   
-   const Food = ({ name, picture }) => {
-     return (
-       <div>
-         <h1>I like {name}</h1>
-         <img src={picture} />
-       </div>
-     );
-   };
-   
-   const foodILike = [
-     {
-       name: 'KIMCHI',
-       image:'img source 넣기'
-     },
-     {
-       name: 'Gimbap',
-       image:'img source 넣기'
-     }
-   ];
-   
-   function App() {
-     return (
-       <div>
-         {foodILike.map(dish => {
-           return <Food name={dish.name} picture={dish.image} />;
-         })}
-       </div>
-     );
-   }
-   
-   export default App;
-   
-   ```
-
-7. 프로퍼티에 Rating 항목 추가
-   App.js
-
-   ```javascript
    const App = () => {
      return (
        <div>
-         {foodILike.map(dish => {
-           return (
-             <Food
-               key={dish.id}
-               name={dish.name}
-               picture={dish.image}
-               rating={dish.rating}
-             />
-           );
-         })}
+         <h1>Hello!</h1>
+         <Food name="kimchi" something={[1, 2, 3, 4]} />
        </div>
      );
    };
+   
+   export default App;
+   
    ```
 
-8. PropTypes 추가
+   * 컴포넌트에 `value`를 줄 수 있습니다. 위 코드에서 `Potato ` 컴포넌트에 value를 주고 `property`로 fav라는 값을 줬습니다. 이렇게 동적으로 컴포넌트를 생성한다면 손쉽게 다양한 HTML을 랜더링 할 수 있습니다.
+   * 브라우저에서 console 을 보면  `props`에 `kimchi`와 `[1,2,3,4,]` 가 객체로 전달 된 것을 볼 수 있습니다.
+
+   
+
+   * ES6 문법을 활용해 `{ }` 키 값을 넣어주면 그 식별자를 이용해서 프로퍼티를 가져올 수 있습니다.
+
+   ```javascript
+   import React from 'react';
+   
+   const Food = ({ fav }) => {
+     return <h1>I like {fav}</h1>;
+   };
+   
+   const App = () => {
+     return (
+       <div>
+         <h1>Hello!</h1>
+         <Food name="kimchi" />
+       </div>
+     );
+   };
+   
+   export default App;
+   
+   ```
+
+   
+
+2. API 에서 음식 정보 가져왔다고 가정하고 App.js 작성하기
+
+   * 이런식으로 코드를 작성하지는 않습니다.
+
+     ```javascript
+     import React from 'react';
+     
+     const Food = ({ fav }) => {
+       return <h1>I like {fav}</h1>;
+     };
+     
+     const App = () => {
+       return (
+         <div>
+           <h1>Hello!</h1>
+           // 이런식으로 하면 API에서 동적으로 데이터를 가져올 수 없음
+           <Food name="kimchi" />
+           <Food name="ramen" />
+           <Food name="kimbap" />
+           <Food name="noodle" />
+         </div>
+       );
+     };
+     
+     export default App;
+     
+     ```
+
+   * 동적으로 데이터를 가져오는 방법
+
+     ```javascript
+     import React from 'react';
+     
+     const Food = ({ fav }) => {
+       return <h1>I like {fav}</h1>;
+     };
+     
+     const foodILike = [
+       {
+         name: 'KIMCHI',
+         image: 'img source 넣기'
+       },
+       {
+         name: 'Gimbap',
+         image: 'img source 넣기'
+       }
+     ];
+     
+     const App = () => {
+       return (
+         <div>
+           {foodILike.map(e => {
+             return <Food fav={e.name} image={e.image} />;
+           })}
+           <h1>Hello!</h1>
+         </div>
+       );
+     };
+     
+     export default App;
+     
+     ```
+
+   * 콜백 함수 만들어서 map에 넣어주기  ( 하지만 function을 만들지 않는게 더 깔끔)
+
+     ```javascript
+     import React from 'react';
+     
+     const Food = ({ fav }) => {
+       return (
+         <div>
+           <h1>I like {fav}</h1>
+           <p></p>
+         </div>
+       );
+     };
+     
+     const foodILike = [
+       {
+         name: 'KIMCHI',
+         image: 'img source 넣기'
+       },
+       {
+         name: 'Gimbap',
+         image: 'img source 넣기'
+       }
+     ];
+     
+     const renderFood = e => {
+       return <Food fav={e.name} picture={e.image} />;
+     };
+     
+     const App = () => {
+       return (
+         <div>
+           {foodILike.map(e => {
+            return <Food key={e.id} fav={e.name} image={e.image} />;
+           })}
+           <h1>Hello!</h1>
+         </div>
+       );
+     };
+     
+     export default App;
+     
+     ```
+
+3. 고유한 key 설정하기
+
+   브라우저를 보면 `1 Warning: Each child in a list should have a unique "key" prop` 같은 에러를 볼 수 있다. React는 똑똑하지 않음으로 우리가 준 프로퍼티를 다 같은 프로퍼티라고 생각한다. 따라서 React가 식별할 수 있는 별도의 고유한 키를 전달 해주자.
+
+   ```javascript
+   ...
+   const foodILike = [
+     {
+       id: 1,
+       name: 'KIMCHI',
+       image: 'img source 넣기'
+     },
+     {
+       id: 2,
+       name: 'Gimbap',
+       image: 'img source 넣기'
+     }
+   ];
+   
+   const App = () => {
+     return (
+       <div>
+         {foodILike.map(e => {
+           return <Food key={e.id} fav={e.name} image={e.image} />;
+         })}
+         <h1>Hello!</h1>
+       </div>
+     );
+   };
+   
+   export default App;
+   
+   ```
+
+#### prototype 으로 props 체크하기
+
+1. PropTypes 추가
 
    * 프로퍼티가 미리 지정해놓은 타입에 올바르게 사용되었는지 체크해주는 역할을 한다.
 
@@ -179,17 +297,22 @@
      };
      ```
 
-## 2. Class 컴포넌트
+------
 
-* React 는 자동적으로 나의 calss component의 render method를 실행한다.
+## 2. State
 
-* Class Component 는 state 를 가진다.
+#### class Component
 
+* React 는 자동적으로 class component의 **render method**를 실행합니다. 따라서 React component에 render 메소드를 작성해주면 이 안에 있는 것들을 client 에게 보내줍니다. 
+* **Class Component 는 state 를 가집니다.** 이것은 우리가 Class Component 를 사용하는 이유입니다.
 * state는 object이고 component의 data를 넣을 공간이 있다.
-
 * 즉 내가 바꿀 data는 state 안에 넣으면 된다.
 
-* ```javascript
+#### 버튼 클릭하면 숫자 올라가는 코드 작성하기
+
+* `state` 프로퍼티를 직접적으로 바꾸면 안된다.
+
+  ```javascript
   import React from 'react';
   import PropTypes from 'prop-types';
   
@@ -197,30 +320,23 @@
     state = {
       count: 0
     };
-  ///////////////////////////////////////////////////
+  
     add = () => {
-      this.state.count++;
       console.log('add');
+      // this.state.count = 1;
+        
     };
+  
     minus = () => {
-      this.state.count--;
-      console.log('minus');
+      console.log('Minus');
     };
-  ///////////////////////////////////////////////////
-    render() {
-      return (
-        <div>
-          <h1>The number is : {this.state.count}</h1>
-          <button onClick={this.add}>Add</button>
-          <button onClick={this.minus}>Minus</button>
-        </div>
-      );
-    }
-  }
   
-  export default App;
-  
+  ...
   ```
+
+  위 코드를 보면 `this.state.count` 를 통해 직접 값을 할당하려고 합니다. 이렇게 하시면 안됩니다. `setState()` 를 사용해서 값을 바꿔야 합니다. 왜냐하면 직접 값을 바꾸고자 하면 **React**는 **render** 함수를 재 실행하지 않게 됩니다. 자연스럽게 바뀐 값을 동적으로 보여줄 수 없을 것입니다.
+
+
 
 * 위에서 처럼 직접적으로 state 값을 바꿀수 없다. 따라서 새로운 상태로 변경 될 때마다 render 함수를 새로 실행할 수 있게 setState를 사용해야 한다.
 
@@ -235,7 +351,7 @@
     };
   ```
 
-  성능 상 더 좋은 코드
+* **성능 향상을 위해 이렇게 사용하자!**
 
   ```javascript
     add = () => {
@@ -248,33 +364,47 @@
     };
   ```
 
-## 3. Movie App 만들기  
+### 가장 중요한 것은!
+
+### setState 를 호출 할 때마다 React 는 Render 함수를 재 호출 한다!
+
+------
+
+## 3. 컴포넌트 Life Cycle
+
+#### 1. Mounting
+
+컴포넌트의 인스턴스가 생성되어 DOM 상에 삽입될 때에 순서대로 호출됩니다.
+
+* `constructor()`
+* `render()`
+* `componentDidMount()` :
+  외부에서 데이터를 불러와야 한다면, 네트워크 요청을 보내기 적절한 위치입니다. render 되기전에 데이터를 불러와야 하기 때문입니다.
+
+#### 2. Updating
+
+props 또는 state가 변경되면 갱신이 발생합니다. 아래 메서드들은 컴포넌트가 다시 **rendering** 때 순서대로 호출됩니다.
+
+* `render()`
+* `componentDidUpdate()`
+
+#### 3. Unmounting
+
+아래 메서드는 컴포넌트가 DOM 상에서 제거될 때에 호출됩니다.
+
+* `componentWillUnmount()`
 
 
 
-#### 가장 많이 사용하는 component (Component Life Cycle)
 
-1. Mounting
 
-   맨 처음 실행
+## 4. Movie App 만들기  
 
-   * `constructor()`
-   * `render()`
-   * `componentDIdMount()`
 
-2. Updating
-   사용자에 의해 실행
-
-   * `render()`
-   * `componentDIdUpdate()`
-
-3. Unmounting
-
-   컴포넌트가 끝날 때
-
-   * `componentWillUmount()`
 
 ### Movie App Api 가져오기
+
+#### `axios` 사용하기
 
 1. ` $ npm i axios`
 
@@ -288,16 +418,36 @@
 
 3. axios 는 데이터 가져오는데 시간이 걸리므로 asyn await 사용하기
 
-   ```javascript
-     getMovies = async () => {
-       const movies = await axios.get('https://yts-proxy.now.sh/list_movies.json');
-     };
-     componentDidMount() {
-       this.getMovies();
-     }
-   ```
+   * async await 사용하기
 
-4. src/Movie.js 에 PropTyle 정의 하기
+     ```javascript
+       getMovies = async () => {
+         const movies = await axios.get('https://yts-proxy.now.sh/list_movies.json');
+       };
+       componentDidMount() {
+         this.getMovies();
+       }
+     ```
+
+   * `then()` 사용하기
+
+     ```javascript
+       getMovies = () => {
+         return axios.get('https://yts-proxy.now.sh/list_movies.json');
+       };
+       componentDidMount() {
+         this.getMovies()
+           .then(data => {
+             console.log(data);
+           })
+       }
+     ```
+
+     
+
+   
+
+4. src/Movie.js 에 PropType 정의 하기
 
    ```javascript
    import React from 'react';
